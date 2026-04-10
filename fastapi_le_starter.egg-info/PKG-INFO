@@ -1,0 +1,62 @@
+Metadata-Version: 2.4
+Name: fastapi-le-starter
+Version: 0.0.1
+Summary: Starter repository for fastapi lab exam
+Author-email: Kwasi Edwards <kwasiedwards@gmail.com>
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: asyncpg
+Requires-Dist: fastapi[all]
+Requires-Dist: httpx
+Requires-Dist: itsdangerous
+Requires-Dist: jinja2
+Requires-Dist: pwdlib[argon2]
+Requires-Dist: psycopg2-binary
+Requires-Dist: pyjwt
+Requires-Dist: python-jose
+Requires-Dist: pytest-asyncio
+Requires-Dist: pytest
+Requires-Dist: ruff
+Requires-Dist: sqlmodel
+Requires-Dist: tabulate
+Requires-Dist: typer
+Requires-Dist: uvicorn[standard]
+
+# Flask Starter Template
+A template for simple fastapi projects.
+
+# Creating a virtual environment
+
+```
+$ python -m venv venv
+```
+
+# Activating the virtual environment
+
+#### On Mac / Linux
+```bash
+$ source venv/bin/activate
+```
+#### On Windows
+```
+$ venv\Scripts\activate
+```
+
+
+# Installing Dependencies
+```
+$ pip install -e .
+```
+
+
+# Running the Project
+```
+$ fastapi dev
+```
+
+# Initializing the Database
+When connecting the project to a fresh empty database ensure the appropriate configuration is set then file then run the following command.
+
+```
+$ python app/cli.py initialize
+```

@@ -1,0 +1,15 @@
+README.md
+pyproject.toml
+app/__init__.py
+app/cli.py
+app/config.py
+app/database.py
+app/dependencies.py
+app/main.py
+app/models.py
+app/utilities.py
+fastapi_le_starter.egg-info/PKG-INFO
+fastapi_le_starter.egg-info/SOURCES.txt
+fastapi_le_starter.egg-info/dependency_links.txt
+fastapi_le_starter.egg-info/requires.txt
+fastapi_le_starter.egg-info/top_level.txt
