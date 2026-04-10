@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Library</title>
+
+    <!-- ==================== SIR'S ORIGINAL CODE - DO NOT MODIFY ==================== -->
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- ==================== STUDENT STYLES BELOW ==================== -->
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        nav {
+            background-color: #1a237e;
+        }
+
+        .album-card {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .album-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;
+        }
+
+        .album-card.active-album {
+            border: 3px solid #1a237e;
+        }
+
+        .album-img {
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .track-item {
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            transition: background 0.15s;
+        }
+
+        .track-item:hover {
+            background-color: #e8eaf6;
+        }
+
+        .track-item.active-track {
+            background-color: #c5cae9;
+            font-weight: bold;
+        }
+
+        .comment-card {
+            border-left: 4px solid #1a237e;
+            margin-bottom: 10px;
+            padding: 10px 14px;
+            background: #fff;
+            border-radius: 4px;
+        }
+
+        .reaction-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .section-title {
+            color: #1a237e;
+            font-weight: 600;
+            border-bottom: 2px solid #e8eaf6;
+            padding-bottom: 6px;
+            margin-bottom: 14px;
+        }
+
+        .panel {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            height: 100%;
+        }
+
+        .delete-btn {
+            float: right;
+            color: #e53935 !important;
+        }
+
+        .no-content {
+            color: #9e9e9e;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="nav-wrapper container">
+            <a href="/" class="brand-logo">
+                <i class="material-icons" style="vertical-align:middle; margin-right:8px;">library_music</i>
+                Music Library
+            </a>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 30px; margin-bottom: 40px;">
+
+        <!-- ===== ROW 1: ALBUM GRID ===== -->
+        <h5 class="section-title">
+            <i class="material-icons" style="vertical-align:middle;">album</i> Albums
+        </h5>
+
+        <div class="row">
+            {% for album in albums %}
+            <div class="col s12 m6 l3">
+                <a href="/albums/{{ album.id }}" style="text-decoration:none; color:inherit;">
+                    <div class="card album-card z-depth-1 {% if selected_album and selected_album.id == album.id %}active-album{% endif %}">
+                        <div class="card-image">
+                            <img src="{{ album.image }}" class="album-img" alt="{{ album.title }}">
+                        </div>
+                        <div class="card-content" style="padding: 10px 14px;">
+                            <p class="truncate" style="font-weight:600; margin:0;">{{ album.title }}</p>
+                            <p class="truncate" style="color:#757575; font-size:0.85rem; margin:0;">{{ album.artist }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% else %}
+            <div class="col s12">
+                <p class="no-content">No albums found. Run <code>python app/cli.py initialize</code> to seed data.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ===== ROW 2: TRACKS + TRACK DETAIL ===== -->
+        {% if selected_album %}
+        <div class="row" style="margin-top: 10px;">
+
+            <!-- TRACKS LIST (left panel) -->
+            <div class="col s12 m4">
+                <div class="panel">
+                    <h6 class="section-title">
+                        <i class="material-icons tiny">queue_music</i>
+                        Tracks — {{ selected_album.title }}
+                    </h6>
+
+                    {% for track in tracks %}
+                    <a href="/albums/{{ selected_album.id }}/tracks/{{ track.id }}" style="text-decoration:none; color:inherit;">
+                        <div class="track-item collection-item {% if selected_track and selected_track.id == track.id %}active-track{% endif %}"
+                             style="display:flex; justify-content:space-between; align-items:center; padding: 10px 12px;">
+                            <span>
+                                <i class="material-icons tiny" style="vertical-align:middle; color:#1a237e;">music_note</i>
+                                {{ track.title }}
+                            </span>
+                            <span style="color:#9e9e9e; font-size:0.8rem;">{{ track.duration }}</span>
+                        </div>
+                    </a>
+                    {% else %}
+                    <p class="no-content">No tracks in this album.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- TRACK DETAIL (right panel) -->
+            <div class="col s12 m8">
+                {% if selected_track %}
+                <div class="panel">
+
+                    <!-- Track Header -->
+                    <h5 style="margin-top:0; color:#1a237e;">{{ selected_track.title }}</h5>
+                    <p style="color:#757575; margin-top:-10px;">
+                        <i class="material-icons tiny">album</i> {{ selected_album.title }} &nbsp;|&nbsp;
+                        <i class="material-icons tiny">timer</i> {{ selected_track.duration }}
+                    </p>
+
+                    <!-- Reactions -->
+                    <h6 class="section-title">Reactions</h6>
+                    <div class="reaction-bar">
+                        <!-- Like -->
+                        <form method="POST" action="/albums/{{ selected_album.id }}/tracks/{{ selected_track.id }}/react">
+                            <input type="hidden" name="reaction_type" value="like">
+                            <button type="submit" class="btn green darken-1 waves-effect waves-light">
+                                <i class="material-icons left">thumb_up</i>{{ likes }}
+                            </button>
+                        </form>
+                        <!-- Dislike -->
+                        <form method="POST" action="/albums/{{ selected_album.id }}/tracks/{{ selected_track.id }}/react">
+                            <input type="hidden" name="reaction_type" value="dislike">
+                            <button type="submit" class="btn red darken-1 waves-effect waves-light">
+                                <i class="material-icons left">thumb_down</i>{{ dislikes }}
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Comments List -->
+                    <h6 class="section-title">Comments ({{ comments | length }})</h6>
+
+                    {% for comment in comments %}
+                    <div class="comment-card">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <strong>{{ comment.author }}</strong>
+                                <p style="margin: 4px 0 0 0;">{{ comment.content }}</p>
+                            </div>
+                            <!-- Delete comment -->
+                            <form method="POST" action="/comments/{{ comment.id }}/delete" style="margin:0;">
+                                <input type="hidden" name="album_id" value="{{ selected_album.id }}">
+                                <input type="hidden" name="track_id" value="{{ selected_track.id }}">
+                                <button type="submit" class="btn-flat delete-btn waves-effect" title="Delete comment">
+                                    <i class="material-icons small">delete</i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="no-content">No comments yet. Be the first!</p>
+                    {% endfor %}
+
+                    <!-- Add Comment Form -->
+                    <h6 class="section-title" style="margin-top: 20px;">Add a Comment</h6>
+                    <form method="POST" action="/albums/{{ selected_album.id }}/tracks/{{ selected_track.id }}/comment">
+                        <div class="input-field">
+                            <input id="author" type="text" name="author" required>
+                            <label for="author">Your Name</label>
+                        </div>
+                        <div class="input-field">
+                            <textarea id="content" class="materialize-textarea" name="content" required></textarea>
+                            <label for="content">Comment</label>
+                        </div>
+                        <button type="submit" class="btn indigo darken-4 waves-effect waves-light">
+                            <i class="material-icons left">send</i>Post Comment
+                        </button>
+                    </form>
+
+                </div>
+                {% else %}
+                <div class="panel" style="display:flex; align-items:center; justify-content:center; min-height:200px;">
+                    <p style="color:#9e9e9e; text-align:center;">
+                        <i class="material-icons medium" style="display:block; color:#c5cae9;">music_note</i>
+                        Select a track to view details, comments and reactions.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- Materialize JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+</body>
+</html>
